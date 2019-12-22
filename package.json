@@ -1,0 +1,25 @@
+{
+  "name": "dev_company",
+  "version": "0.0.1",
+  "description": "Development companies' yelp ",
+  "main": "server.js",
+  "scripts": {
+    "start": "SET NODE_ENV=production& node server",
+    "dev": "nodemon server"
+  },
+  "keywords": [
+    "development",
+    "companies",
+    "review",
+    "jobs"
+  ],
+  "author": "IBR",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.1"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  }
+}
