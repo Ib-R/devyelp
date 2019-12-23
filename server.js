@@ -1,7 +1,8 @@
 const express = require('express');
 const env = require('dotenv');
 const logger = require('morgan');
-const colors = require('colors');
+const errorHandler = require('./middleware/error');
+require('colors');
 const connectDB = require('./config/db');
 
 // Load env variables
@@ -13,16 +14,19 @@ connectDB();
 // Route files
 const compaines = require('./routes/companies');
 
-
 const app = express();
+// Body parser
+app.use(express.json());
 
-// Mount middlewares
+// Mount logger for development
 if (process.env.NODE_ENV === 'development') {
     app.use(logger('dev'));
 }
 
 //Mount routers
 app.use('/api/v1/companies', compaines);
+
+app.use(errorHandler);
 
 let port = process.env.PORT || 5000;
 

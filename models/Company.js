@@ -18,7 +18,7 @@ const CompanySchema = new mongoose.Schema({
         type: String,
         match: [
             /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
-            'Please use a valid URL with HTTP or HTTPS'
+            'Please enter valid URL with HTTP or HTTPS'
         ]
     },
     phone: {
@@ -34,7 +34,7 @@ const CompanySchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        required: [true, 'Please add an address']
+        required: [true, 'Please enter address']
     },
     location: {
         // GeoJSON Point
@@ -44,7 +44,6 @@ const CompanySchema = new mongoose.Schema({
         },
         coordinates: {
             type: [Number],
-            required: true,
             index: '2dsphere'
         },
         formattedAddress: String,
