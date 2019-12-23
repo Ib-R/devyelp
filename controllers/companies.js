@@ -1,6 +1,7 @@
-const Company = require('../models/Company');
 const asyncHandler = require('../utils/asyncHandler');
 const ErrorResponse = require('../utils/errorResponse');
+const geocoder = require('../utils/geocoder');
+const Company = require('../models/Company');
 
 // @desc    Get all companies
 // @route   GET /api/v1/companies
@@ -54,3 +55,47 @@ exports.deleteCompany = asyncHandler(async (req, res, next) => {
     }
     res.json({ success: true, data: `Company deleted ` });
 });
+
+// @desc    GET companies within radius
+// @route   GET /api/v1/companies/radius/:coords/:distance
+// @access  Private
+exports.getCompaniesInRadius = asyncHandler(async (req, res, next) => {
+    const { coords, distance } = req.params;
+    const coordsArr = coords.split(',');
+    const lat = coordsArr[0];
+    const lng = coordsArr[1];
+
+    // Calc radius using radians
+    // By dividing dist by radius of Earth
+    // Earth radius = 3,963 mi or 6,378 km
+    const radius = distance / 6378;
+
+    const companies = await Company.find({
+        location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
+    });
+
+    res.json({ success: true, count: companies.length, data: companies });
+});
+
+// @desc    GET companies within radius with Zipcode
+// @route   GET /api/v1/companies/radius/:zipcode/:distance
+// @access  Private
+// exports.getCompaniesInRadius = asyncHandler(async (req, res, next) => {
+//     const { zipcode, distance } = req.params;
+
+//     // Get lat/lng from geocode
+//     const loc = await geocoder.geocode(zipcode);
+//     const lat = 29.908118;
+//     const lng = 31.287130;
+
+//     // Calc radius using radians
+//     // By dividing dist by radius of Earth
+//     // Earth radius = 3,963 mi or 6,378 km
+//     const radius = distance / 6378;
+
+//     const companies = await Company.find({
+//         location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
+//     });
+
+//     res.json({ success: true, count: companies.length, data: companies });
+// });
