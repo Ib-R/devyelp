@@ -1,7 +1,7 @@
 const express = require('express');
 const env = require('dotenv');
 const logger = require('morgan');
-const errorHandler = require('./middleware/error');
+const errorHandler = require('./middleware/errorHandler');
 require('colors');
 const connectDB = require('./config/db');
 
@@ -15,6 +15,7 @@ connectDB();
 const compaines = require('./routes/companies');
 
 const app = express();
+
 // Body parser
 app.use(express.json());
 
@@ -26,6 +27,7 @@ if (process.env.NODE_ENV === 'development') {
 //Mount routers
 app.use('/api/v1/companies', compaines);
 
+// Mount error handler
 app.use(errorHandler);
 
 let port = process.env.PORT || 5000;
