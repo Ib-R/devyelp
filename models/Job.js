@@ -42,4 +42,38 @@ const JobSchema = new mongoose.Schema({
     }
 });
 
+// Static method
+JobSchema.statics.getAverageSalary = async function (companyId) {
+    const dataToUpdate = await this.aggregate([
+        {
+            $match: { company: companyId }
+        },
+        {
+            $group: {
+                _id: '$company',
+                averageSalary: { $avg: '$salary' }
+            }
+        }
+    ]);
+
+    try {
+        await this.model('Company')
+            .findByIdAndUpdate(companyId, {
+                averageSalary: Math.ceil(dataToUpdate[0].averageSalary)
+            });
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+// Invoke getAverageSalary after save
+JobSchema.post('save', function (next) {
+    this.constructor.getAverageSalary(this.company);
+});
+
+// Invoke getAverageSalary after save
+JobSchema.pre('remove', function (next) {
+    this.constructor.getAverageSalary(this.company);
+});
+
 module.exports = mongoose.model('Job', JobSchema);

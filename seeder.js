@@ -23,7 +23,7 @@ const jobs = JSON.parse(fs.readFileSync(`${__dirname}/_data/jobs.json`, 'utf-8')
 const importData = async () => {
     try {
         await Company.create(companies);
-        // await Job.create(jobs);
+        await Job.create(jobs);
         console.log('Data imported...'.green.inverse);
         process.exit();
     } catch (error) {
