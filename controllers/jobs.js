@@ -8,17 +8,12 @@ const Company = require('../models/Company');
 // @route   GET /api/v1/companies/:companyID/jobs
 // @access  Public
 exports.getJobs = asyncHandler(async (req, res, next) => {
-    let query;
-
     if (req.params.companyId) { // Get jobs for specific company
-        query = Job.find({ company: req.params.companyId });
+        const data = await Job.find({ company: req.params.companyId });
+        return res.json({ success: true, count: data.length, data });
     } else { // get all jobs
-        query = Job.find().populate('company', 'name desc');
+        res.json(res.advancedResults);
     }
-
-    const jobs = await query;
-
-    res.json({ success: true, count: jobs.length, data: jobs });
 });
 
 // @desc    Get single jobs

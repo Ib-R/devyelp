@@ -5,8 +5,13 @@ const {
     createCompany,
     updateCompany,
     deleteCompany,
-    getCompaniesInRadius
+    getCompaniesInRadius,
+    companyFileUpload
 } = require('../controllers/companies');
+
+const Company = require('../models/Company');
+const advancedResults = require('../middleware/advancedResults');
+
 const jobRouter = require('./jobs');
 
 const router = express.Router();
@@ -14,13 +19,15 @@ const router = express.Router();
 // Re-route relations routes
 router.use('/:companyId/jobs', jobRouter);
 
+router.route('/:id/file').put(companyFileUpload);
+
 router
     .route('/radius/:coords/:distance')
     .get(getCompaniesInRadius);
 
 router
     .route('/')
-    .get(getCompanies)
+    .get(advancedResults(Company, 'jobs'), getCompanies)
     .post(createCompany);
 
 router

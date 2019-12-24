@@ -1,3 +1,4 @@
+const path = require('path');
 const asyncHandler = require('../utils/asyncHandler');
 const ErrorResponse = require('../utils/errorResponse');
 const geocoder = require('../utils/geocoder');
@@ -7,61 +8,7 @@ const Company = require('../models/Company');
 // @route   GET /api/v1/companies
 // @access  Public
 exports.getCompanies = asyncHandler(async (req, res, next) => {
-    const reqQuery = { ...req.query };
-
-    // Queries to Exclude
-    const removeQueries = ['select', 'sort', 'page', 'limit'];
-    removeQueries.forEach(param => delete reqQuery[param]);
-
-    // Filtering
-    let queryStr = JSON.stringify(reqQuery);
-    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
-
-    query = Company.find(JSON.parse(queryStr)).populate('jobs');
-
-    // Select fields
-    if (req.query.select) {
-        const fields = req.query.select.split(',').join(' ');
-        query = query.select(fields);
-    }
-
-    // Sort
-    if (req.query.sort) {
-        query = query.sort(req.query.sort);
-    } else {
-        query = query.sort('-createdAt');
-    }
-
-    // Pagination
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    const total = await Company.countDocuments();
-
-    query = query.skip(startIndex).limit(limit);
-
-    // Executing query
-    const companies = await query;
-
-    // Pagination result
-    const pagination = {};
-
-    if (endIndex < total) { // if not the last page
-        pagination.next = {
-            page: page + 1,
-            limit
-        };
-    }
-
-    if (startIndex > 0) { // if not first page
-        pagination.prev = {
-            page: page - 1,
-            limit
-        };
-    }
-
-    res.json({ success: true, count: companies.length, pagination, data: companies });
+    res.json(res.advancedResults);
 });
 
 // @desc    Create new companies
@@ -108,6 +55,43 @@ exports.deleteCompany = asyncHandler(async (req, res, next) => {
     }
     company.remove();
     res.json({ success: true, data: 'Company deleted' });
+});
+
+// @desc    Upload file for company
+// @route   DELETE /api/v1/companies/:id/file
+// @access  Private
+exports.companyFileUpload = asyncHandler(async (req, res, next) => {
+    const company = await Company.findById(req.params.id);
+    if (!company) {
+        return next(new ErrorResponse(`ID not found ${req.params.id}`, 404));
+    }
+
+    if (!req.files) {
+        return next(new ErrorResponse('Please upload a file', 400));
+    }
+    console.log(req.files.file);
+    const file = req.files.file;
+
+    // Validation
+    if (!file.mimetype.startsWith('image')) {
+        return next(new ErrorResponse('Please upload an image file', 400));
+    }
+    if (file.size > process.env.MAX_FILE_SIZE) {
+        return next(new ErrorResponse(`Please upload file less than ${process.env.MAX_FILE_SIZE / 1024 / 1024}MB`, 400));
+    }
+
+    // Custom file name
+    file.name = `file_${company._id}${path.parse(file.name).ext}`;
+
+    file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async err => {
+        if (err) {
+            console.error(err);
+            return next(new ErrorResponse(`Problem with file uplaod`, 500));
+        }
+
+        await Company.findByIdAndUpdate(req.params.id, { photo: file.name });
+        res.json({ success: true, data: file.name });
+    });
 });
 
 // @desc    GET companies within radius

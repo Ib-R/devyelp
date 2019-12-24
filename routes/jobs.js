@@ -7,11 +7,14 @@ const {
     deleteJob
 } = require('../controllers/jobs');
 
+const Job = require('../models/Job');
+const advancedResults = require('../middleware/advancedResults');
+
 const router = express.Router({ mergeParams: true });
 
 router
     .route('/')
-    .get(getJobs)
+    .get(advancedResults(Job, { path: 'company', select: 'name desc' }), getJobs)
     .post(createJob);
 
 router
