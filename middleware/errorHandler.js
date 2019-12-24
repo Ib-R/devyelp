@@ -18,7 +18,7 @@ const errorHandler = (err, req, res, next) => {
 
     // Mongoose duplicate key
     if (err.code === 11000) {
-        error = new ErrorResponse(`Field with value '${err.keyValue.name}' already exist`, 400);
+        error = new ErrorResponse(`Field with value '${err.keyValue[Object.keys(err.keyValue)[0]]}' already exist`, 400);
     }
 
     // Mongoose validation errors
