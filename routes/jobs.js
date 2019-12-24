@@ -8,6 +8,7 @@ const {
 } = require('../controllers/jobs');
 
 const Job = require('../models/Job');
+const { protect } = require('../middleware/auth');
 const advancedResults = require('../middleware/advancedResults');
 
 const router = express.Router({ mergeParams: true });
@@ -15,12 +16,12 @@ const router = express.Router({ mergeParams: true });
 router
     .route('/')
     .get(advancedResults(Job, { path: 'company', select: 'name desc' }), getJobs)
-    .post(createJob);
+    .post(protect, createJob);
 
 router
     .route('/:id')
     .get(getJob)
-    .put(updateJob)
-    .delete(deleteJob);
+    .put(protect, updateJob)
+    .delete(protect, deleteJob);
 
 module.exports = router;

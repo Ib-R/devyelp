@@ -10,6 +10,7 @@ const {
 } = require('../controllers/companies');
 
 const Company = require('../models/Company');
+const { protect } = require('../middleware/auth');
 const advancedResults = require('../middleware/advancedResults');
 
 const jobRouter = require('./jobs');
@@ -19,7 +20,7 @@ const router = express.Router();
 // Re-route relations routes
 router.use('/:companyId/jobs', jobRouter);
 
-router.route('/:id/file').put(companyFileUpload);
+router.route('/:id/file').put(protect, companyFileUpload);
 
 router
     .route('/radius/:coords/:distance')
@@ -28,12 +29,12 @@ router
 router
     .route('/')
     .get(advancedResults(Company, 'jobs'), getCompanies)
-    .post(createCompany);
+    .post(protect, createCompany);
 
 router
     .route('/:id')
     .get(getCompany)
-    .put(updateCompany)
-    .delete(deleteCompany);
+    .put(protect, updateCompany)
+    .delete(protect, deleteCompany);
 
 module.exports = router;
