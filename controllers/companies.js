@@ -16,7 +16,8 @@ exports.getCompanies = asyncHandler(async (req, res, next) => {
     // Filtering
     let queryStr = JSON.stringify(reqQuery);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
-    query = Company.find(JSON.parse(queryStr));
+
+    query = Company.find(JSON.parse(queryStr)).populate('jobs');
 
     // Select fields
     if (req.query.select) {
@@ -97,15 +98,16 @@ exports.updateCompany = asyncHandler(async (req, res, next) => {
     res.json({ success: true, data: company });
 });
 
-// @desc    Delete new companies
+// @desc    Delete company
 // @route   DELETE /api/v1/companies/:id
 // @access  Private
 exports.deleteCompany = asyncHandler(async (req, res, next) => {
-    const company = await Company.findByIdAndDelete(req.params.id);
+    const company = await Company.findById(req.params.id);
     if (!company) {
         return next(new ErrorResponse(`ID not found ${req.params.id}`, 404));
     }
-    res.json({ success: true, data: `Company deleted ` });
+    company.remove();
+    res.json({ success: true, data: 'Company deleted' });
 });
 
 // @desc    GET companies within radius

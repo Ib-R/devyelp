@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config({ path: '.env' });
 
 const Company = require('./models/Company');
+const Job = require('./models/Job');
 
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -16,12 +17,14 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Read JSON file
 const companies = JSON.parse(fs.readFileSync(`${__dirname}/_data/companies.json`, 'utf-8'));
+const jobs = JSON.parse(fs.readFileSync(`${__dirname}/_data/jobs.json`, 'utf-8'));
 
 // Import into DB
 const importData = async () => {
     try {
         await Company.create(companies);
-        console.log('Companies data imported...'.green.inverse);
+        // await Job.create(jobs);
+        console.log('Data imported...'.green.inverse);
         process.exit();
     } catch (error) {
         console.error(error);
@@ -32,7 +35,8 @@ const importData = async () => {
 const deleteData = async () => {
     try {
         await Company.deleteMany();
-        console.log('Companies data deleted...'.red.inverse);
+        await Job.deleteMany();
+        console.log('Data deleted...'.red.inverse);
         process.exit();
     } catch (error) {
         console.error(error);

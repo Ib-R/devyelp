@@ -1,5 +1,5 @@
 {
-  "name": "dev_company",
+  "name": "dev_yelp",
   "version": "0.0.1",
   "description": "Development companies' yelp ",
   "main": "server.js",

@@ -7,8 +7,12 @@ const {
     deleteCompany,
     getCompaniesInRadius
 } = require('../controllers/companies');
+const jobRouter = require('./jobs');
 
 const router = express.Router();
+
+// Re-route relations routes
+router.use('/:companyId/jobs', jobRouter);
 
 router
     .route('/radius/:coords/:distance')

@@ -98,6 +98,9 @@ const CompanySchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 });
 
 // Create company slug from name
@@ -121,6 +124,22 @@ CompanySchema.pre('save', async function (next) {
     };
 
     next();
+});
+
+// Cascade delete jobs
+CompanySchema.pre('remove', async function (next) {
+    console.log(`Removing jobs belonging to company ${this._id}`.red);
+
+    await this.model('Job').deleteMany({ company: this._id });
+    next();
+});
+
+// Relations with virtuals
+CompanySchema.virtual('jobs', {
+    ref: 'Job',
+    localField: '_id',
+    foreignField: 'company',
+    justOne: false
 });
 
 module.exports = mongoose.model('Company', CompanySchema);

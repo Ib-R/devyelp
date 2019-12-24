@@ -13,6 +13,7 @@ connectDB();
 
 // Route files
 const compaines = require('./routes/companies');
+const jobs = require('./routes/jobs');
 
 const app = express();
 
@@ -26,6 +27,7 @@ if (process.env.NODE_ENV === 'development') {
 
 //Mount routers
 app.use('/api/v1/companies', compaines);
+app.use('/api/v1/jobs', jobs);
 
 // Mount error handler
 app.use(errorHandler);
