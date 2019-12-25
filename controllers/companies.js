@@ -15,6 +15,15 @@ exports.getCompanies = asyncHandler(async (req, res, next) => {
 // @route   POST /api/v1/companies
 // @access  Private
 exports.createCompany = asyncHandler(async (req, res, next) => {
+    // Link company to the user
+    req.body.user = req.user.id;
+
+    // Restrict publisher to one company
+    const publishedCompany = await Company.findOne({ user: req.user.id });
+    if (publishedCompany && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`Publisher ${req.user.name} already have a published company`, 400));
+    }
+
     const company = await Company.create(req.body);
     res.status(201).json({ success: true, data: company });
 });
@@ -34,14 +43,22 @@ exports.getCompany = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/companies/:id
 // @access  Private
 exports.updateCompany = asyncHandler(async (req, res, next) => {
-    const company = await Company.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true
-    });
+    let company = await Company.findByIdAndUpdate(req.params.id);
 
     if (!company) {
         return next(new ErrorResponse(`ID not found ${req.params.id}`, 404));
     }
+
+    // Ownership check
+    if (company.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`User is not authorized to update the company`, 403));
+    }
+
+    company = await Company.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true
+    });
+
     res.json({ success: true, data: company });
 });
 
@@ -53,6 +70,12 @@ exports.deleteCompany = asyncHandler(async (req, res, next) => {
     if (!company) {
         return next(new ErrorResponse(`ID not found ${req.params.id}`, 404));
     }
+
+    // Ownership check
+    if (company.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`User is not authorized to delete the company`, 403));
+    }
+
     company.remove();
     res.json({ success: true, data: 'Company deleted' });
 });
@@ -64,6 +87,11 @@ exports.companyFileUpload = asyncHandler(async (req, res, next) => {
     const company = await Company.findById(req.params.id);
     if (!company) {
         return next(new ErrorResponse(`ID not found ${req.params.id}`, 404));
+    }
+
+    // Ownership check
+    if (company.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`User is not authorized to update the company`, 403));
     }
 
     if (!req.files) {
