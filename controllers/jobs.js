@@ -50,7 +50,7 @@ exports.createJob = asyncHandler(async (req, res, next) => {
 
     const job = await Job.create(req.body);
 
-    res.json({ success: true, data: job });
+    res.status(201).json({ success: true, data: job });
 });
 
 // @desc    Update job

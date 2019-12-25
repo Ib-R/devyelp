@@ -19,6 +19,7 @@ connectDB();
 const compaines = require('./routes/companies');
 const jobs = require('./routes/jobs');
 const auth = require('./routes/auth');
+const users = require('./routes/users');
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/companies', compaines);
 app.use('/api/v1/jobs', jobs);
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/users', users);
 
 // Mount error handler
 app.use(errorHandler);

@@ -43,7 +43,7 @@ exports.getCompany = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/companies/:id
 // @access  Private
 exports.updateCompany = asyncHandler(async (req, res, next) => {
-    let company = await Company.findByIdAndUpdate(req.params.id);
+    let company = await Company.findById(req.params.id);
 
     if (!company) {
         return next(new ErrorResponse(`ID not found ${req.params.id}`, 404));
@@ -97,7 +97,7 @@ exports.companyFileUpload = asyncHandler(async (req, res, next) => {
     if (!req.files) {
         return next(new ErrorResponse('Please upload a file', 400));
     }
-    console.log(req.files.file);
+
     const file = req.files.file;
 
     // Validation
