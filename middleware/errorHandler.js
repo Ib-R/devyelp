@@ -12,7 +12,7 @@ const errorHandler = (err, req, res, next) => {
         if (err.kind === 'ObjectId') { // Mongoose bad objectId
             error = new ErrorResponse(`Resource with id ${err.value} not found`, 400);
         } else { // Mongoose other cast errors
-            error = new ErrorResponse(err.message, 400);
+            error = new ErrorResponse('Invalid input', 400);
         }
     }
 

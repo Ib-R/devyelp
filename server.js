@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const errorHandler = require('./middleware/errorHandler');
 const connectDB = require('./config/db');
+const mongoSanitize = require('express-mongo-sanitize');
 
 require('colors');
 
@@ -37,6 +38,9 @@ if (process.env.NODE_ENV === 'development') {
 
 // File-upload middleware
 app.use(fileupload());
+
+// Sanitize data NoSQL injection prevention
+app.use(mongoSanitize());
 
 // Static folder
 app.use(express.static(path.join(__dirname, 'public')));
