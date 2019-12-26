@@ -76,7 +76,7 @@ JobSchema.post('save', function (next) {
     this.constructor.getAverageSalary(this.company);
 });
 
-// Invoke getAverageSalary after save
+// Invoke getAverageSalary before remove
 JobSchema.pre('remove', function (next) {
     this.constructor.getAverageSalary(this.company);
 });

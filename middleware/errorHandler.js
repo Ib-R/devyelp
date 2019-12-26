@@ -6,7 +6,7 @@ const errorHandler = (err, req, res, next) => {
 
     // Log to console
     // console.log(err.stack.red);
-    console.log(err);
+    console.error(err);
 
     if (err.name === 'CastError') {
         if (err.kind === 'ObjectId') { // Mongoose bad objectId
@@ -18,7 +18,7 @@ const errorHandler = (err, req, res, next) => {
 
     // Mongoose duplicate key
     if (err.code === 11000) {
-        error = new ErrorResponse(`Field with value '${err.keyValue[Object.keys(err.keyValue)[0]]}' already exist`, 400);
+        error = new ErrorResponse(`Field '${Object.keys(err.keyValue)[0]}' with value '${err.keyValue[Object.keys(err.keyValue)[0]]}' already exist`, 400);
     }
 
     // Mongoose validation errors

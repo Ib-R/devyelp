@@ -14,11 +14,13 @@ const { protect, authorize } = require('../middleware/auth');
 const advancedResults = require('../middleware/advancedResults');
 
 const jobRouter = require('./jobs');
+const reviewRouter = require('./reviews');
 
 const router = express.Router();
 
 // Re-route relations routes
 router.use('/:companyId/jobs', jobRouter);
+router.use('/:companyId/reviews', reviewRouter);
 
 router.route('/:id/file').put(protect, authorize('admin', 'publisher'), companyFileUpload);
 
