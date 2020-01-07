@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DevYelp</title>
+
+    <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.css" />
+
+    <style>
+        .error {
+            color: red
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Create Company</h2>
+
+    <div id="error"></div>
+
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name">
+    </div>
+    <div>
+        <label for="map">Location:</label>
+        <div id="map" style="width:50em;height:30em;"></div>
+    </div>
+    <button onclick="submit()">Submit</button>
+
+    <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.3.2/mapquest.js"></script>
+    <script src="../js/map.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+
+</html>

@@ -74,6 +74,9 @@ app.use('/api/v1/jobs', jobs);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', users);
 app.use('/api/v1/reviews', reviews);
+app.get('/api/v1/mapquest', (req, res, next) => {
+    res.json(process.env.GEOCODER_KEY);
+});
 
 // Mount error handler
 app.use(errorHandler);

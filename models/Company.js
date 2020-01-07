@@ -42,7 +42,8 @@ const CompanySchema = new mongoose.Schema({
         // GeoJSON Point
         type: {
             type: String,
-            enum: ['Point']
+            enum: ['Point'],
+            default: 'Point'
         },
         coordinates: {
             type: [Number],
@@ -114,22 +115,22 @@ CompanySchema.pre('save', function (next) {
     next();
 });
 
-// Geocode create location fields
-CompanySchema.pre('save', async function (next) {
-    const loc = await geocoder.geocode(this.address);
-    this.location = {
-        type: 'Point',
-        coordinates: this.location.coordinates || [loc[0].longitude, loc[0].latitude],
-        formattedAddress: loc[0].formattedAddress,
-        street: loc[0].streetName,
-        city: loc[0].city,
-        state: loc[0].stateCode,
-        zipcode: loc[0].zipcode,
-        country: loc[0].countryCode,
-    };
+// Geocode create location fields from address
+// CompanySchema.pre('save', async function (next) {
+//     const loc = await geocoder.geocode(this.address);
+//     this.location = {
+//         type: 'Point',
+//         coordinates: this.location.coordinates || [loc[0].longitude, loc[0].latitude],
+//         formattedAddress: loc[0].formattedAddress,
+//         street: loc[0].streetName,
+//         city: loc[0].city,
+//         state: loc[0].stateCode,
+//         zipcode: loc[0].zipcode,
+//         country: loc[0].countryCode,
+//     };
 
-    next();
-});
+//     next();
+// });
 
 // Cascade delete jobs
 CompanySchema.pre('remove', async function (next) {
